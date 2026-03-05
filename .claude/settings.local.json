@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git ls-tree:*)",
+      "Bash(flutter create:*)",
+      "Bash(flutter pub get:*)",
+      "Bash(flutter analyze:*)",
+      "Bash(echo.:*)",
+      "Bash(flutter test:*)",
+      "Bash(flutter build apk)"
+    ]
+  }
+}

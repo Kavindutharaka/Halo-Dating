@@ -1,0 +1,66 @@
+name: halo
+description: "Halo - A simple, safe dating app for Sri Lanka"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+  # Firebase
+  firebase_core: ^3.12.1
+  firebase_auth: ^5.5.1
+  cloud_firestore: ^5.6.5
+  firebase_storage: ^12.4.4
+
+  # State Management
+  provider: ^6.1.4
+
+  # Image Picker
+  image_picker: ^1.1.2
+
+  # Cached Network Image
+  cached_network_image: ^3.4.1
+
+  # Date formatting
+  intl: ^0.20.2
+
+  # URL Launcher
+  url_launcher: ^6.3.1
+
+  # Stripe Payments
+  flutter_stripe: ^11.4.0
+
+  # Card Swiper
+  flutter_card_swiper: ^7.0.1
+
+  # UUID
+  uuid: ^4.5.1
+
+  # Pinput for OTP
+  pinput: ^5.0.1
+
+  # Smooth page indicator
+  smooth_page_indicator: ^1.2.0+3
+
+  # Shimmer loading
+  shimmer: ^3.0.0
+
+  # Timeago
+  timeago: ^3.7.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
