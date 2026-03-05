@@ -138,8 +138,12 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                   backCardOffset: const Offset(0, -30),
                   padding: const EdgeInsets.all(16),
                   onSwipe: (previousIndex, currentIndex, direction) {
+                    // Capture profile before modifying the list
+                    final profile = discover.profiles[previousIndex];
+                    // Always remove the swiped card immediately
+                    discover.removeProfile(previousIndex);
                     if (direction == CardSwiperDirection.right) {
-                      _onLike(discover.profiles[previousIndex]);
+                      _onLike(profile);
                     }
                     return true;
                   },

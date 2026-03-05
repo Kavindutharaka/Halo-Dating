@@ -10,6 +10,7 @@ import 'package:halo/providers/chat_provider.dart';
 import 'package:halo/screens/auth/phone_login_screen.dart';
 import 'package:halo/screens/profile/profile_setup_screen.dart';
 import 'package:halo/screens/home/main_navigation.dart';
+import 'package:halo/screens/splash/splash_screen.dart';
 import 'package:halo/utils/theme.dart';
 
 void main() async {
@@ -53,7 +54,7 @@ class HaloApp extends StatelessWidget {
         title: 'Halo',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
-        home: const AuthWrapper(),
+        home: const SplashScreen(child: AuthWrapper()),
       ),
     );
   }

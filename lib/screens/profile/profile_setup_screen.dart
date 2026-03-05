@@ -212,96 +212,108 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   }
 
   Widget _buildBasicInfoPage() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Basic Information',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'Tell us about yourself',
-            style: TextStyle(color: AppTheme.textSecondary),
-          ),
-          const SizedBox(height: 24),
-          TextFormField(
-            controller: _nameController,
-            decoration: const InputDecoration(
-              labelText: 'Full Name',
-              prefixIcon: Icon(Icons.person_outline),
-            ),
-          ),
-          const SizedBox(height: 16),
-          GestureDetector(
-            onTap: _pickDate,
-            child: AbsorbPointer(
-              child: TextFormField(
-                decoration: InputDecoration(
-                  labelText: _dateOfBirth != null
-                      ? '${_dateOfBirth!.day}/${_dateOfBirth!.month}/${_dateOfBirth!.year}'
-                      : 'Date of Birth',
-                  prefixIcon: const Icon(Icons.cake_outlined),
-                  suffixText: _dateOfBirth != null
-                      ? '${_calculateAge(_dateOfBirth!)} years old'
-                      : null,
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Basic Information',
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
-              ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Tell us about yourself',
+                  style: TextStyle(color: AppTheme.textSecondary),
+                ),
+                const SizedBox(height: 24),
+                TextFormField(
+                  controller: _nameController,
+                  onChanged: (_) => setState(() {}),
+                  decoration: const InputDecoration(
+                    labelText: 'Full Name',
+                    prefixIcon: Icon(Icons.person_outline),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                GestureDetector(
+                  onTap: _pickDate,
+                  child: AbsorbPointer(
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        labelText: _dateOfBirth != null
+                            ? '${_dateOfBirth!.day}/${_dateOfBirth!.month}/${_dateOfBirth!.year}'
+                            : 'Date of Birth',
+                        prefixIcon: const Icon(Icons.cake_outlined),
+                        suffixText: _dateOfBirth != null
+                            ? '${_calculateAge(_dateOfBirth!)} years old'
+                            : null,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Gender',
+                  style: TextStyle(fontWeight: FontWeight.w500),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _genderOption(Gender.male, 'Male', Icons.male),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child:
+                          _genderOption(Gender.female, 'Female', Icons.female),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  value: _city,
+                  decoration: const InputDecoration(
+                    labelText: 'City',
+                    prefixIcon: Icon(Icons.location_on_outlined),
+                  ),
+                  items: AppConstants.sriLankanCities
+                      .map((city) => DropdownMenuItem(
+                            value: city,
+                            child: Text(city),
+                          ))
+                      .toList(),
+                  onChanged: (value) => setState(() => _city = value),
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _bioController,
+                  maxLines: 3,
+                  maxLength: 200,
+                  onChanged: (_) => setState(() {}),
+                  decoration: const InputDecoration(
+                    labelText: 'Short Bio',
+                    hintText: 'Tell something about yourself...',
+                    prefixIcon: Icon(Icons.edit_outlined),
+                    alignLabelWithHint: true,
+                  ),
+                ),
+                const SizedBox(height: 8),
+              ],
             ),
           ),
-          const SizedBox(height: 16),
-          const Text(
-            'Gender',
-            style: TextStyle(fontWeight: FontWeight.w500),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                child: _genderOption(Gender.male, 'Male', Icons.male),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _genderOption(Gender.female, 'Female', Icons.female),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          DropdownButtonFormField<String>(
-            value: _city,
-            decoration: const InputDecoration(
-              labelText: 'City',
-              prefixIcon: Icon(Icons.location_on_outlined),
-            ),
-            items: AppConstants.sriLankanCities
-                .map((city) => DropdownMenuItem(
-                      value: city,
-                      child: Text(city),
-                    ))
-                .toList(),
-            onChanged: (value) => setState(() => _city = value),
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            controller: _bioController,
-            maxLines: 3,
-            maxLength: 200,
-            decoration: const InputDecoration(
-              labelText: 'Short Bio',
-              hintText: 'Tell something about yourself...',
-              prefixIcon: Icon(Icons.edit_outlined),
-              alignLabelWithHint: true,
-            ),
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton(
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+          child: ElevatedButton(
             onPressed: _isBasicInfoValid() ? _nextPage : null,
             child: const Text('Continue'),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
