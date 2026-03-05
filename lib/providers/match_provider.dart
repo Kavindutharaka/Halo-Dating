@@ -8,7 +8,7 @@ class MatchProvider extends ChangeNotifier {
   final FirestoreService _firestoreService = FirestoreService();
 
   List<MatchModel> _matches = [];
-  Map<String, UserModel> _matchedUsers = {};
+  final Map<String, UserModel> _matchedUsers = {};
   bool _isLoading = false;
   StreamSubscription? _matchSubscription;
 
@@ -24,7 +24,6 @@ class MatchProvider extends ChangeNotifier {
     _matchSubscription =
         _firestoreService.getMatches(userId).listen((matches) async {
       _matches = matches;
-      // Load user details for each match
       for (final match in matches) {
         final otherUserId = match.getOtherUserId(userId);
         if (!_matchedUsers.containsKey(otherUserId)) {

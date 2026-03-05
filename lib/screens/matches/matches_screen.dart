@@ -22,7 +22,8 @@ class _MatchesScreenState extends State<MatchesScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final uid = context.read<AuthProvider>().firebaseUser?.uid;
+      final auth = context.read<AuthProvider>();
+      final uid = auth.firebaseUser?.uid ?? auth.userModel?.uid;
       if (uid != null) {
         context.read<MatchProvider>().listenToMatches(uid);
       }

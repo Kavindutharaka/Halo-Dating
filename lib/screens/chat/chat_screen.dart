@@ -47,7 +47,8 @@ class _ChatScreenState extends State<ChatScreen> {
     final text = _messageController.text.trim();
     if (text.isEmpty) return;
 
-    final uid = context.read<AuthProvider>().firebaseUser!.uid;
+    final auth = context.read<AuthProvider>();
+    final uid = auth.firebaseUser?.uid ?? auth.userModel!.uid;
 
     _chatProvider.sendMessage(
       matchId: widget.matchId,
@@ -60,7 +61,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final currentUserId = context.read<AuthProvider>().firebaseUser!.uid;
+    final authRead = context.read<AuthProvider>();
+    final currentUserId = authRead.firebaseUser?.uid ?? authRead.userModel!.uid;
 
     return Scaffold(
       appBar: AppBar(

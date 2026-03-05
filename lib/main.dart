@@ -49,12 +49,12 @@ class AuthWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
 
-    // Not logged in
+    // Not logged in → show phone login
     if (!authProvider.isLoggedIn) {
       return const PhoneLoginScreen();
     }
 
-    // Loading user data
+    // Logged in but user data still loading
     if (authProvider.userModel == null) {
       return const Scaffold(
         body: Center(
@@ -70,12 +70,12 @@ class AuthWrapper extends StatelessWidget {
       );
     }
 
-    // Profile not complete
+    // Profile not complete → show setup wizard
     if (!authProvider.isProfileComplete) {
       return const ProfileSetupScreen();
     }
 
-    // Main app
+    // All good → show main app
     return const MainNavigation();
   }
 }

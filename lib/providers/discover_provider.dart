@@ -9,7 +9,6 @@ class DiscoverProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
 
-  // Filters (premium only)
   String? _cityFilter;
   int? _minAgeFilter;
   int? _maxAgeFilter;

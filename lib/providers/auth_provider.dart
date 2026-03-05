@@ -45,15 +45,6 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  void listenToUserChanges() {
-    if (_firebaseUser != null) {
-      _firestoreService.userStream(_firebaseUser!.uid).listen((user) {
-        _userModel = user;
-        notifyListeners();
-      });
-    }
-  }
-
   Future<void> sendOtp(String phoneNumber) async {
     _isLoading = true;
     _error = null;
@@ -66,13 +57,27 @@ class AuthProvider extends ChangeNotifier {
         _verificationId = verificationId;
         _resendToken = resendToken;
         _isLoading = false;
+        _error = null;
         notifyListeners();
       },
       onVerificationCompleted: (credential) async {
+        // Auto-verification (some Android devices do this automatically)
         await _signInWithCredential(credential);
       },
       onVerificationFailed: (e) {
-        _error = e.message ?? 'Verification failed';
+        switch (e.code) {
+          case 'invalid-phone-number':
+            _error = 'Invalid phone number format.';
+            break;
+          case 'too-many-requests':
+            _error = 'Too many attempts. Please wait and try again.';
+            break;
+          case 'operation-not-allowed':
+            _error = 'Phone sign-in is not enabled. Contact support.';
+            break;
+          default:
+            _error = e.message ?? 'Failed to send OTP. Try again.';
+        }
         _isLoading = false;
         notifyListeners();
       },
@@ -84,7 +89,7 @@ class AuthProvider extends ChangeNotifier {
 
   Future<bool> verifyOtp(String otp) async {
     if (_verificationId == null) {
-      _error = 'No verification ID found. Please resend OTP.';
+      _error = 'Session expired. Please request a new OTP.';
       notifyListeners();
       return false;
     }
@@ -99,9 +104,18 @@ class AuthProvider extends ChangeNotifier {
         smsCode: otp,
       );
       await _signInWithCredential(credential);
-      return true;
+      return _firebaseUser != null;
     } on FirebaseAuthException catch (e) {
-      _error = e.message ?? 'Invalid OTP';
+      switch (e.code) {
+        case 'invalid-verification-code':
+          _error = 'Incorrect OTP. Please check and try again.';
+          break;
+        case 'session-expired':
+          _error = 'OTP expired. Please request a new one.';
+          break;
+        default:
+          _error = e.message ?? 'Verification failed.';
+      }
       _isLoading = false;
       notifyListeners();
       return false;
@@ -114,11 +128,9 @@ class AuthProvider extends ChangeNotifier {
       _firebaseUser = result.user;
 
       if (_firebaseUser != null) {
-        // Check if user exists in Firestore
         final existingUser =
             await _firestoreService.getUser(_firebaseUser!.uid);
         if (existingUser == null) {
-          // Create new user
           final newUser = UserModel(
             uid: _firebaseUser!.uid,
             phoneNumber: _firebaseUser!.phoneNumber ?? '',
