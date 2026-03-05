@@ -29,7 +29,7 @@ class DefaultFirebaseOptions {
     appId: '1:914342933376:android:9f48c66f422626c8cc8765',
     messagingSenderId: '914342933376',
     projectId: 'halo-e1d1a',
-    storageBucket: 'halo-e1d1a.appspot.com',
+    storageBucket: 'halo-e1d1a.firebasestorage.app',
   );
 
   // TODO: Replace with your actual Firebase iOS config

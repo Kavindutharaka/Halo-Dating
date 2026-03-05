@@ -7,7 +7,10 @@
       "Bash(flutter analyze:*)",
       "Bash(echo.:*)",
       "Bash(flutter test:*)",
-      "Bash(flutter build apk)"
+      "Bash(flutter build apk)",
+      "Bash(./gradlew signingReport)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); client=d[''client''][0]; print\\(''Package:'', client[''client_info''][''android_client_info''][''android_package_name'']\\); certs=client.get\\(''oauth_client'',[]\\); print\\(''SHA1 certs:'', [c.get\\(''android_info'',{}\\).get\\(''certificate_hash'',''''\\) for c in certs]\\)\")",
+      "Bash(flutter clean)"
     ]
   }
 }

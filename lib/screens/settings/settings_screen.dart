@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:halo/models/user_model.dart';
 import 'package:halo/providers/auth_provider.dart';
 import 'package:halo/screens/profile/edit_profile_screen.dart';
 import 'package:halo/screens/premium/premium_screen.dart';
@@ -127,19 +128,20 @@ class SettingsScreen extends StatelessWidget {
               titleColor: AppTheme.errorColor,
               onTap: () => _showSignOutDialog(context),
             ),
+
           ],
         ),
       ),
     );
   }
 
-  String _verificationTitle(dynamic user) {
+  String _verificationTitle(UserModel? user) {
     if (user == null) return 'Get Verified';
     if (user.isVerified) return 'Verified';
-    switch (user.verificationStatus.name) {
-      case 'pending':
+    switch (user.verificationStatus) {
+      case VerificationStatus.pending:
         return 'Verification Pending';
-      case 'rejected':
+      case VerificationStatus.rejected:
         return 'Verification Rejected';
       default:
         return 'Get Verified';

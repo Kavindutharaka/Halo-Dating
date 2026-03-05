@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:halo/models/match_model.dart';
 import 'package:halo/models/user_model.dart';
@@ -23,16 +24,27 @@ class MatchProvider extends ChangeNotifier {
 
     _matchSubscription =
         _firestoreService.getMatches(userId).listen((matches) async {
-      _matches = matches;
-      for (final match in matches) {
-        final otherUserId = match.getOtherUserId(userId);
-        if (!_matchedUsers.containsKey(otherUserId)) {
-          final user = await _firestoreService.getUser(otherUserId);
-          if (user != null) {
-            _matchedUsers[otherUserId] = user;
+      debugPrint('🟢 [MatchProvider] Received ${matches.length} matches');
+      try {
+        _matches = matches;
+        for (final match in matches) {
+          final otherUserId = match.getOtherUserId(userId);
+          if (!_matchedUsers.containsKey(otherUserId)) {
+            final user = await _firestoreService.getUser(otherUserId);
+            if (user != null) {
+              _matchedUsers[otherUserId] = user;
+            }
           }
         }
+        _isLoading = false;
+        notifyListeners();
+      } catch (e, stack) {
+        debugPrint('🔴 [MatchProvider] Error in listen callback: $e\n$stack');
+        _isLoading = false;
+        notifyListeners();
       }
+    }, onError: (e, stack) {
+      debugPrint('🔴 [MatchProvider] Stream error: $e\n$stack');
       _isLoading = false;
       notifyListeners();
     });

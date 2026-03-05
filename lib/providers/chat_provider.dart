@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:halo/models/message_model.dart';
 import 'package:halo/services/firestore_service.dart';
@@ -20,7 +21,12 @@ class ChatProvider extends ChangeNotifier {
 
     _messageSubscription =
         _firestoreService.getMessages(matchId).listen((messages) {
+      debugPrint('🟢 [ChatProvider] Received ${messages.length} messages');
       _messages = messages;
+      _isLoading = false;
+      notifyListeners();
+    }, onError: (e, stack) {
+      debugPrint('🔴 [ChatProvider] Stream error: $e\n$stack');
       _isLoading = false;
       notifyListeners();
     });

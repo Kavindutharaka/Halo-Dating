@@ -179,7 +179,7 @@ class UserModel {
       premiumUntil: (map['premiumUntil'] as Timestamp?)?.toDate(),
       isVerified: map['isVerified'] ?? false,
       verificationStatus: VerificationStatus.values.firstWhere(
-        (e) => e.name == map['verificationStatus'],
+        (e) => e.name == (map['verificationStatus'] ?? ''),
         orElse: () => VerificationStatus.none,
       ),
       isProfileComplete: map['isProfileComplete'] ?? false,

@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:halo/models/user_model.dart';
 import 'package:halo/services/auth_service.dart';
@@ -23,19 +24,44 @@ class AuthProvider extends ChangeNotifier {
   bool get isProfileComplete => _userModel?.isProfileComplete ?? false;
 
   AuthProvider() {
+    debugPrint('🔵 [AuthProvider] Initializing, setting up auth state listener');
     _authService.authStateChanges.listen((user) async {
+      debugPrint('🔵 [AuthProvider] Auth state changed: user=${user?.uid ?? 'null'}');
       _firebaseUser = user;
       if (user != null) {
+        debugPrint('🔵 [AuthProvider] User logged in, loading Firestore model...');
         await _loadUserModel(user.uid);
       } else {
+        debugPrint('🔵 [AuthProvider] User logged out');
         _userModel = null;
+        notifyListeners();
       }
-      notifyListeners();
     });
   }
 
   Future<void> _loadUserModel(String uid) async {
-    _userModel = await _firestoreService.getUser(uid);
+    debugPrint('🔵 [AuthProvider] _loadUserModel called for uid=$uid');
+    try {
+      _userModel = await _firestoreService.getUser(uid);
+      debugPrint('🟢 [AuthProvider] _loadUserModel success: userModel=${_userModel == null ? 'null (no document)' : 'loaded'}');
+
+      // Document missing — create it now (can happen if previous sign-in failed mid-way)
+      if (_userModel == null && _firebaseUser != null) {
+        debugPrint('🟡 [AuthProvider] Document missing for existing auth user — creating now');
+        final newUser = UserModel(
+          uid: _firebaseUser!.uid,
+          phoneNumber: _firebaseUser!.phoneNumber ?? '',
+        );
+        await _firestoreService.createUser(newUser);
+        _userModel = newUser;
+        debugPrint('🟢 [AuthProvider] User document created successfully');
+      }
+    } catch (e) {
+      debugPrint('🔴 [AuthProvider] _loadUserModel FAILED: $e');
+      _userModel = null;
+      _error = 'Failed to load profile. Please restart the app.';
+    }
+    debugPrint('🔵 [AuthProvider] After _loadUserModel: isLoggedIn=$isLoggedIn, userModel=$_userModel, error=$_error');
     notifyListeners();
   }
 
@@ -123,29 +149,41 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> _signInWithCredential(PhoneAuthCredential credential) async {
+    debugPrint('🔵 [AuthProvider] _signInWithCredential called');
     try {
       final result = await _authService.signInWithCredential(credential);
       _firebaseUser = result.user;
+      debugPrint('🟢 [AuthProvider] Firebase sign-in success: uid=${_firebaseUser?.uid}');
 
       if (_firebaseUser != null) {
+        debugPrint('🔵 [AuthProvider] Checking Firestore for existing user...');
         final existingUser =
             await _firestoreService.getUser(_firebaseUser!.uid);
         if (existingUser == null) {
+          debugPrint('🟡 [AuthProvider] New user — creating Firestore document');
           final newUser = UserModel(
             uid: _firebaseUser!.uid,
             phoneNumber: _firebaseUser!.phoneNumber ?? '',
           );
           await _firestoreService.createUser(newUser);
           _userModel = newUser;
+          debugPrint('🟢 [AuthProvider] New user created in Firestore');
         } else {
           _userModel = existingUser;
+          debugPrint('🟢 [AuthProvider] Existing user loaded from Firestore');
         }
       }
 
       _isLoading = false;
       notifyListeners();
     } on FirebaseAuthException catch (e) {
+      debugPrint('🔴 [AuthProvider] FirebaseAuthException during sign-in: code=${e.code}, msg=${e.message}');
       _error = e.message ?? 'Sign in failed';
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      debugPrint('🔴 [AuthProvider] Unknown error during sign-in: $e');
+      _error = 'Sign in failed';
       _isLoading = false;
       notifyListeners();
     }
